@@ -22,6 +22,16 @@ func NewSubscriptionHandler(service *service.SubscriptionService, logger *zap.Lo
 	}
 }
 
+// CreateSubscription godoc
+// @Summary Create a subscription
+// @Description Create a new subscription record
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param subscription body models.CreateSubscriptionInput true "Subscription data"
+// @Success 201 {object} models.Subscription
+// @Failure 400 {object} map[string]string
+// @Router /subscriptions [post]
 func (h *SubscriptionHandler) CreateSubscription(w http.ResponseWriter, r *http.Request) {
 	var input models.CreateSubscriptionInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -41,6 +51,15 @@ func (h *SubscriptionHandler) CreateSubscription(w http.ResponseWriter, r *http.
 	json.NewEncoder(w).Encode(sub)
 }
 
+// GetSubscription godoc
+// @Summary Get subscription by ID
+// @Description Get subscription by its ID
+// @Tags subscriptions
+// @Produce json
+// @Param id path string true "Subscription ID"
+// @Success 200 {object} models.Subscription
+// @Failure 404 {object} map[string]string
+// @Router /subscriptions/{id} [get]
 func (h *SubscriptionHandler) GetSubscription(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
@@ -54,6 +73,15 @@ func (h *SubscriptionHandler) GetSubscription(w http.ResponseWriter, r *http.Req
 	json.NewEncoder(w).Encode(sub)
 }
 
+// ListSubscriptions godoc
+// @Summary List all subscriptions
+// @Description Get paginated list of subscriptions
+// @Tags subscriptions
+// @Produce json
+// @Param limit query int false "Limit" default(20)
+// @Param offset query int false "Offset" default(0)
+// @Success 200 {object} models.SubscriptionList
+// @Router /subscriptions [get]
 func (h *SubscriptionHandler) ListSubscriptions(w http.ResponseWriter, r *http.Request) {
 	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
 	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
@@ -68,6 +96,17 @@ func (h *SubscriptionHandler) ListSubscriptions(w http.ResponseWriter, r *http.R
 	json.NewEncoder(w).Encode(list)
 }
 
+// UpdateSubscription godoc
+// @Summary Update subscription
+// @Description Update an existing subscription
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param id path string true "Subscription ID"
+// @Param subscription body models.UpdateSubscriptionInput true "Subscription data"
+// @Success 200 {object} models.Subscription
+// @Failure 404 {object} map[string]string
+// @Router /subscriptions/{id} [put]
 func (h *SubscriptionHandler) UpdateSubscription(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
@@ -88,6 +127,15 @@ func (h *SubscriptionHandler) UpdateSubscription(w http.ResponseWriter, r *http.
 	json.NewEncoder(w).Encode(sub)
 }
 
+// DeleteSubscription godoc
+// @Summary Delete subscription
+// @Description Delete a subscription by ID
+// @Tags subscriptions
+// @Produce json
+// @Param id path string true "Subscription ID"
+// @Success 204
+// @Failure 404 {object} map[string]string
+// @Router /subscriptions/{id} [delete]
 func (h *SubscriptionHandler) DeleteSubscription(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
@@ -100,6 +148,17 @@ func (h *SubscriptionHandler) DeleteSubscription(w http.ResponseWriter, r *http.
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// GetTotalCost godoc
+// @Summary Get total cost for period
+// @Description Calculate total cost of subscriptions for a period with filters
+// @Tags subscriptions
+// @Produce json
+// @Param user_id query string false "User ID filter"
+// @Param service_name query string false "Service name filter"
+// @Param start_date query string true "Start date (MM-YYYY)"
+// @Param end_date query string true "End date (MM-YYYY)"
+// @Success 200 {object} models.TotalCostResponse
+// @Router /subscriptions/total-cost [get]
 func (h *SubscriptionHandler) GetTotalCost(w http.ResponseWriter, r *http.Request) {
 	userID := r.URL.Query().Get("user_id")
 	serviceName := r.URL.Query().Get("service_name")
