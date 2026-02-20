@@ -1,0 +1,16 @@
+app:
+  port: ${APP_PORT}
+
+database:
+  host: ${DB_HOST}
+  port: ${DB_PORT}
+  name: ${DB_NAME}
+  user: ${DB_USER}
+  password: ${DB_PASSWORD}
+  max_open_con: 25
+  max_idle_con: 5
+
+
+logging:
+  level: ${LOG_LEVEL}
+  development: true
