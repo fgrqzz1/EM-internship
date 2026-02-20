@@ -3,15 +3,16 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"em-internship/internal/models"
 	"errors"
 	"fmt"
-	"github.com/jackc/pgx/v5"
 	"go.uber.org/zap"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	"em-internship/internal/models"
 )
 
 var ErrSubscriptionNotFound = errors.New("subscription not found")

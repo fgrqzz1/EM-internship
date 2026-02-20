@@ -2,12 +2,13 @@ package service
 
 import (
 	"context"
-	"em-internship/internal/models"
-	"em-internship/internal/repository"
 	"fmt"
 
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
+
+	"em-internship/internal/models"
+	"em-internship/internal/repository"
 )
 
 type SubscriptionService struct {
