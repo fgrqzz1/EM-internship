@@ -1,7 +1,3 @@
 package docs
 
-import (
-	"github.com/swaggo/swag"
-)
-
-go:generate swag init -g ../cmd/main.go -o ./
+//go:generate swag init -g ../cmd/app/main.go -o ./
