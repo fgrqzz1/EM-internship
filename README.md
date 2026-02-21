@@ -32,8 +32,6 @@ docker compose up --build
 
 ### Эндпоинты
 
-| Метод | Путь | Описание |
-|-------|------|----------|
 POST: `/subscriptions` - создать подписку 
 GET: `/subscriptions` - список подписок (query: `limit`, `offset`)
 GET: `/subscriptions/total-cost` - суммарная стоимость за период (query: `start_date`, `end_date`, опционально `user_id`, `service_name`)
