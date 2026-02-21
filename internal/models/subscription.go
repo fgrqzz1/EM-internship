@@ -17,18 +17,18 @@ type Subscription struct {
 
 type CreateSubscriptionInput struct {
 	ServiceName string `json:"service_name" validate:"required,min=1,max=255"`
-	Price       int    `json:"price" validate:"required"`
+	Price       int    `json:"price" validate:"required,gt=0"`
 	UserID      string `json:"user_id" validate:"required,uuid"`
-	StartDate   string `json:"start_date" validate:"required"`
-	EndDate     string `json:"end_date,omitempty"`
+	StartDate   string `json:"start_date" validate:"required,month_year"`
+	EndDate     string `json:"end_date,omitempty" validate:"omitempty,month_year"`
 }
 
 type UpdateSubscriptionInput struct {
 	ServiceName *string `json:"service_name,omitempty" validate:"omitempty,min=1,max=255"`
-	Price       *int    `json:"price,omitempty" validate:"omitempty"`
+	Price       *int    `json:"price,omitempty" validate:"omitempty,gt=0"`
 	UserID      *string `json:"user_id,omitempty" validate:"omitempty,uuid"`
-	StartDate   *string `json:"start_date,omitempty"`
-	EndDate     *string `json:"end_date,omitempty"`
+	StartDate   *string `json:"start_date,omitempty" validate:"omitempty,month_year"`
+	EndDate     *string `json:"end_date,omitempty" validate:"omitempty,month_year"`
 }
 
 type TotalCostResponse struct {
