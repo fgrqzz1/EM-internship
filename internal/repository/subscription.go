@@ -223,17 +223,19 @@ func (r *SubscriptionRepository) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
+// GetTotalCostForPeriod считает сумму цен подписок, активных хотя бы один день в периоде [startDate, endDate].
+// Подписка активна в периоде, если: start_date <= period_end AND (end_date IS NULL OR end_date >= period_start).
 func (r *SubscriptionRepository) GetTotalCostForPeriod(ctx context.Context, userID, serviceName, startDate, endDate string) (*models.TotalCostResponse, error) {
 	query := `
-		SELECT SUM(price), COUNT(*)
+		SELECT COALESCE(SUM(price), 0), COUNT(*)
 		FROM subscriptions
 		WHERE ($1::text IS NULL OR user_id = $1)
 		  AND ($2::text IS NULL OR service_name = $2)
-		  AND start_date >= $3
-		  AND (end_date IS NULL OR end_date <= $4)
+		  AND start_date <= $4
+		  AND (end_date IS NULL OR end_date >= $3)
 	`
 
-	var totalCost sql.NullInt64
+	var totalCost int64
 	var count int
 
 	err := r.db.QueryRow(ctx, query,
@@ -251,11 +253,11 @@ func (r *SubscriptionRepository) GetTotalCostForPeriod(ctx context.Context, user
 	r.logger.Info("calculated total cost",
 		zap.String("user_id", userID),
 		zap.String("service_name", serviceName),
-		zap.Int("total_cost", int(totalCost.Int64)),
+		zap.Int64("total_cost", totalCost),
 	)
 
 	return &models.TotalCostResponse{
-		TotalCost: int(totalCost.Int64),
+		TotalCost: int(totalCost),
 		Count:     count,
 	}, nil
 }
