@@ -226,24 +226,30 @@ func (r *SubscriptionRepository) Delete(ctx context.Context, id string) error {
 // GetTotalCostForPeriod считает сумму цен подписок, активных хотя бы один день в периоде [startDate, endDate].
 // Подписка активна в периоде, если: start_date <= period_end AND (end_date IS NULL OR end_date >= period_start).
 func (r *SubscriptionRepository) GetTotalCostForPeriod(ctx context.Context, userID, serviceName, startDate, endDate string) (*models.TotalCostResponse, error) {
-	query := `
+	// Собираем запрос без NULL-параметров, чтобы избежать проблем с драйвером
+	base := `
 		SELECT COALESCE(SUM(price), 0), COUNT(*)
 		FROM subscriptions
-		WHERE ($1::text IS NULL OR user_id = $1)
-		  AND ($2::text IS NULL OR service_name = $2)
-		  AND start_date <= $4
-		  AND (end_date IS NULL OR end_date >= $3)
+		WHERE start_date <= $1 AND (end_date IS NULL OR end_date >= $2)
 	`
+	args := []interface{}{endDate, startDate}
+	pos := 3
+
+	if userID != "" {
+		base += fmt.Sprintf(" AND user_id = $%d", pos)
+		args = append(args, userID)
+		pos++
+	}
+	if serviceName != "" {
+		base += fmt.Sprintf(" AND service_name = $%d", pos)
+		args = append(args, serviceName)
+		pos++
+	}
 
 	var totalCost int64
 	var count int
 
-	err := r.db.QueryRow(ctx, query,
-		nullIfEmpty(userID),
-		nullIfEmpty(serviceName),
-		startDate,
-		endDate,
-	).Scan(&totalCost, &count)
+	err := r.db.QueryRow(ctx, base, args...).Scan(&totalCost, &count)
 
 	if err != nil {
 		r.logger.Error("failed to calculate total cost", zap.Error(err))
@@ -260,11 +266,4 @@ func (r *SubscriptionRepository) GetTotalCostForPeriod(ctx context.Context, user
 		TotalCost: int(totalCost),
 		Count:     count,
 	}, nil
-}
-
-func nullIfEmpty(s string) interface{} {
-	if s == "" {
-		return nil
-	}
-	return s
 }
