@@ -27,6 +27,11 @@ import (
 	"em-internship/internal/service"
 )
 
+// @title Subscription Service API
+// @version 1.0
+// @description API для управления подписками на сервисы
+// @host localhost:8080
+// @BasePath /
 func main() {
 	logger, err := config.NewLogger(&config.LoggingConfig{
 		Level:       os.Getenv("LOG_LEVEL"),
