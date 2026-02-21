@@ -82,10 +82,10 @@ func main() {
 	r.Route("/subscriptions", func(r chi.Router) {
 		r.Post("/", subHandler.CreateSubscription)
 		r.Get("/", subHandler.ListSubscriptions)
+		r.Get("/total-cost", subHandler.GetTotalCost)
 		r.Get("/{id}", subHandler.GetSubscription)
 		r.Put("/{id}", subHandler.UpdateSubscription)
 		r.Delete("/{id}", subHandler.DeleteSubscription)
-		r.Get("/total-cost", subHandler.GetTotalCost)
 	})
 
 	r.Get("/swagger/*", httpSwagger.Handler(
