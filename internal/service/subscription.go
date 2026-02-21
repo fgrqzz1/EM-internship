@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/go-playground/validator/v10"
@@ -9,7 +10,10 @@ import (
 
 	"em-internship/internal/models"
 	"em-internship/internal/repository"
+	"em-internship/internal/validation"
 )
+
+var ErrInvalidDateFormat = errors.New("invalid date format: use MM-YYYY")
 
 type SubscriptionService struct {
 	repo      *repository.SubscriptionRepository
@@ -18,9 +22,13 @@ type SubscriptionService struct {
 }
 
 func NewSubscriptionService(repo *repository.SubscriptionRepository, logger *zap.Logger) *SubscriptionService {
+	v := validator.New()
+	if err := validation.RegisterMonthYear(v); err != nil {
+		logger.Warn("failed to register month_year validator", zap.Error(err))
+	}
 	return &SubscriptionService{
 		repo:      repo,
-		validator: validator.New(),
+		validator: v,
 		logger:    logger,
 	}
 }
@@ -57,5 +65,8 @@ func (s *SubscriptionService) Delete(ctx context.Context, id string) error {
 }
 
 func (s *SubscriptionService) GetTotalCostForPeriod(ctx context.Context, userID, serviceName, startDate, endDate string) (*models.TotalCostResponse, error) {
+	if !validation.IsValidMonthYear(startDate) || !validation.IsValidMonthYear(endDate) {
+		return nil, ErrInvalidDateFormat
+	}
 	return s.repo.GetTotalCostForPeriod(ctx, userID, serviceName, startDate, endDate)
 }
