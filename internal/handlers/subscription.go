@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"go.uber.org/zap"
+	"errors"
 	"net/http"
 	"strconv"
+
+	"go.uber.org/zap"
 
 	"em-internship/internal/models"
 	"em-internship/internal/service"
@@ -172,6 +174,10 @@ func (h *SubscriptionHandler) GetTotalCost(w http.ResponseWriter, r *http.Reques
 
 	response, err := h.service.GetTotalCostForPeriod(r.Context(), userID, serviceName, startDate, endDate)
 	if err != nil {
+		if errors.Is(err, service.ErrInvalidDateFormat) {
+			http.Error(w, `{"error":"invalid date format: use MM-YYYY"}`, http.StatusBadRequest)
+			return
+		}
 		h.logger.Error("failed to calculate total cost", zap.Error(err))
 		http.Error(w, `{"error":"failed to calculate total cost"}`, http.StatusInternalServerError)
 		return
