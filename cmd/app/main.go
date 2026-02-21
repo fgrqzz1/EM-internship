@@ -20,7 +20,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	httpSwagger "github.com/swaggo/http-swagger"
 
-	_ "em-internship/docs" // регистрация Swagger-спецификации в swag
+	_ "em-internship/docs"
 	"em-internship/internal/config"
 	"em-internship/internal/handlers"
 	"em-internship/internal/repository"
