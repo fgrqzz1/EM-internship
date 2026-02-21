@@ -2,11 +2,12 @@ package config
 
 import (
 	"fmt"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
+	"os"
 	"strings"
 
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 type Config struct {
@@ -56,7 +57,8 @@ func LoadConfig(logger *zap.Logger) (*Config, error) {
 }
 
 func (c *DatabaseConfig) DSN() string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", c.User, c.Password, c.Host, c.Port, c.Name)
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", c.User, c.Password, c.Host, c.Port, c.Name)
+	return os.ExpandEnv(dsn)
 }
 
 func NewLogger(cfg *LoggingConfig) (*zap.Logger, error) {

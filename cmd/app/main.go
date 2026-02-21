@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"go.uber.org/zap"
 	"log"
 	"net/http"
 	"os"
@@ -11,12 +10,17 @@ import (
 	"syscall"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jackc/pgx/v5/pgxpool"
 	httpSwagger "github.com/swaggo/http-swagger"
 
+	_ "em-internship/docs" // регистрация Swagger-спецификации в swag
 	"em-internship/internal/config"
 	"em-internship/internal/handlers"
 	"em-internship/internal/repository"
@@ -93,7 +97,7 @@ func main() {
 		w.Write([]byte(`{"status": "ok"}`))
 	})
 
-	addr := fmt.Sprintf(":%s", cfg.App.Port)
+	addr := fmt.Sprintf(":%s", os.ExpandEnv(cfg.App.Port))
 	server := &http.Server{
 		Addr:         addr,
 		Handler:      r,
